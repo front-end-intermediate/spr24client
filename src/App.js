@@ -3,31 +3,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Recipes from "./Recipes";
 import RecipeDetail from "./RecipeDetail";
 
-function App() {
-  const [recipes, setRecipes] = React.useState([]);
+import { useFetch } from "./hooks/useFetch";
 
-  React.useEffect(() => {
-    fetch(`/api/recipes`)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          return Promise.reject(response);
-        }
-      })
-      .then((data) => setRecipes(data))
-      .catch((err) => console.log(err));
-  }, []);
+function App() {
+  // const [recipes, setRecipes] = React.useState([]);
+  const { loading, data, error } = useFetch(`/api/recipes`);
+
+  if (loading === true) {
+    return <p>Loading</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <main>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Recipes recipes={recipes} />} />
-          <Route
-            path="/:recipeId"
-            element={<RecipeDetail recipes={recipes} />}
-          />
+          <Route path="/" element={<Recipes recipes={data} />} />
+          <Route path="/:recipeId" element={<RecipeDetail recipes={data} />} />
         </Routes>
       </BrowserRouter>
     </main>

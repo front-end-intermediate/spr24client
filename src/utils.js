@@ -19,7 +19,5 @@ export function formatDate(timestamp) {
   ];
 
   // return a formatted date
-  return (
-    months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear()
-  );
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
