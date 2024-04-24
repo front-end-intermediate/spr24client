@@ -43,7 +43,7 @@ label {
   padding: 0.5rem;
 }
 
-button {
+/* button {
   color: #fff;
   font-size: 1rem;
   padding: 0.5rem;
@@ -51,7 +51,7 @@ button {
   background: #007eb6;
   border: none;
   border-radius: 3px;
-}
+} */
 
 button.delete {
   background: unset;

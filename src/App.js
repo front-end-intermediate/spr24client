@@ -1,31 +1,68 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Recipes from "./Recipes";
 import RecipeDetail from "./RecipeDetail";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useFetch } from "./hooks/useFetch";
-import useToggle from "./hooks/useToggle";
 import Nav from "./Nav";
+import useToggle from "./hooks/useToggle";
 
 function App() {
-  const [loggedin, setLoggedin] = useToggle(false);
-  const { loading, data: recipes, error } = useFetch(`/api/recipes`);
+  const [recipes, setRecipes] = React.useState([]);
+  const [loggedin, setLoggedin] = useToggle(true);
+  const [loading, setLoading] = useToggle(true);
+  const [error, setError] = React.useState("");
+  const { get, post } = useFetch(`/api/recipes`);
 
-  if (loading === true) {
-    return <p>Loading</p>;
-  }
+  const addRecipe = (recipe) => {
+    post("/api/recipes", recipe).then((data) => {
+      setRecipes([data, ...recipes]);
+    });
+  };
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  /* eslint-disable react-hooks/exhaustive-deps */
+  React.useEffect(() => {
+    setLoading(true);
+    get("/api/recipes")
+      .then((data) => {
+        setRecipes(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setError(error);
+      });
+  }, []);
+
+  // if (loading === true) {
+  //   return <p>Loading</p>;
+  // }
+
+  // if (error) {
+  //   return <p>{error}</p>;
+  // }
 
   return (
-    <BrowserRouter>
-      <Nav setLoggedin={setLoggedin} loggedin={loggedin} />
-      <Routes>
-        <Route path="/" element={<Recipes recipes={recipes} />} />
-        <Route path="/:recipeId" element={<RecipeDetail recipes={recipes} />} />
-      </Routes>
-    </BrowserRouter>
+    <main>
+      <BrowserRouter>
+        <Nav setLoggedin={setLoggedin} loggedin={loggedin} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Recipes
+                recipes={recipes}
+                loggedin={loggedin}
+                addRecipe={addRecipe}
+              />
+            }
+          />
+          <Route
+            path="/:recipeId"
+            element={<RecipeDetail recipes={recipes} />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </main>
   );
 }
 
